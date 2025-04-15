@@ -9,15 +9,33 @@ from routes import api
 # Load environment variables
 load_dotenv()
 
+# Debug logging for environment variables
+supabase_url = os.getenv('SUPABASE_URL')
+supabase_service_key = os.getenv('SUPABASE_SERVICE_KEY')
+
+if not supabase_url or not supabase_service_key:
+    raise ValueError(
+        "Missing required environment variables. "
+        "Please ensure SUPABASE_URL and SUPABASE_SERVICE_KEY are set."
+    )
+
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
+app.secret_key = os.getenv('SECRET_KEY', 'MoAfyaCamps')
 
 # Initialize Supabase client
 supabase: Client = create_client(
-    os.getenv('SUPABASE_URL'),
-    os.getenv('SUPABASE_KEY'),
-    options={'postgrest_client_timeout': 30}  # Remove proxy settings
+    supabase_url,
+    supabase_service_key,
+    options={
+        'headers': {
+            'X-Client-Info': 'moafyacamps-flask'
+        },
+        'auth': {
+            'autoRefreshToken': True,
+            'persistSession': True
+        }
+    }
 )
 
 # Make supabase client available in app context
