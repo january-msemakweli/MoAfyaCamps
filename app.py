@@ -29,9 +29,9 @@ try:
 
     # Initialize Supabase client with minimal options
     print("Initializing Supabase client...")
-    supabase: Client = create_client(
-        supabase_url,
-        supabase_service_key
+    supabase = create_client(
+        api_url=supabase_url,
+        api_key=supabase_service_key
     )
     print("Supabase client initialized successfully")
 except Exception as e:
