@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, current_app
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from supabase import create_client, Client
 from datetime import datetime
@@ -16,7 +16,8 @@ app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
 # Initialize Supabase client
 supabase: Client = create_client(
     os.getenv('SUPABASE_URL'),
-    os.getenv('SUPABASE_KEY')
+    os.getenv('SUPABASE_KEY'),
+    options={'postgrest_client_timeout': 30}  # Remove proxy settings
 )
 
 # Make supabase client available in app context
@@ -60,6 +61,13 @@ def load_user(user_id):
 app.register_blueprint(api)
 
 # Routes
+@app.route('/health')
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat()
+    })
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
@@ -139,4 +147,5 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    port = int(os.getenv('PORT', 10000))
+    app.run(host='0.0.0.0', port=port) 
