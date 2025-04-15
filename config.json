@@ -1,0 +1,5 @@
+{
+    "connectionString": "postgresql://postgres:MoAfyaCamps@db.fiofnzsqinopnznalxrn.supabase.co:5432/MoAfyaCamps",
+    "port": 5432
+  }
+  
