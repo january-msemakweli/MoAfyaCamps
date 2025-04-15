@@ -13,30 +13,30 @@ load_dotenv()
 supabase_url = os.getenv('SUPABASE_URL')
 supabase_service_key = os.getenv('SUPABASE_SERVICE_KEY')
 
+print(f"SUPABASE_URL is {'set' if supabase_url else 'not set'}")
+print(f"SUPABASE_SERVICE_KEY is {'set' if supabase_service_key else 'not set'}")
+
 if not supabase_url or not supabase_service_key:
     raise ValueError(
         "Missing required environment variables. "
         "Please ensure SUPABASE_URL and SUPABASE_SERVICE_KEY are set."
     )
 
-# Initialize Flask app
-app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'MoAfyaCamps')
+try:
+    # Initialize Flask app
+    app = Flask(__name__)
+    app.secret_key = os.getenv('SECRET_KEY', 'MoAfyaCamps')
 
-# Initialize Supabase client
-supabase: Client = create_client(
-    supabase_url,
-    supabase_service_key,
-    options={
-        'headers': {
-            'X-Client-Info': 'moafyacamps-flask'
-        },
-        'auth': {
-            'autoRefreshToken': True,
-            'persistSession': True
-        }
-    }
-)
+    # Initialize Supabase client with minimal options
+    print("Initializing Supabase client...")
+    supabase: Client = create_client(
+        supabase_url,
+        supabase_service_key
+    )
+    print("Supabase client initialized successfully")
+except Exception as e:
+    print(f"Error initializing Supabase client: {str(e)}")
+    raise
 
 # Make supabase client available in app context
 app.supabase = supabase
